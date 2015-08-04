@@ -16,9 +16,15 @@
   <description>Easily create CLIs with Plexus components</description>
 
   <scm>
-    <connection>scm:git:git@github.com:sonatype/plexus-cli.git</connection>
-    <developerConnection>scm:git:git@github.com:sonatype/plexus-cli.git</developerConnection>
+    <connection>scm:git:git@github.com:codehaus-plexus/plexus-cli.git</connection>
+    <developerConnection>scm:git:git@github.com:codehaus-plexus/plexus-cli.git</developerConnection>
+    <url>http://github.com/codehaus-plexus/plexus-cli</url>
+    <tag>HEAD</tag>
   </scm>
+  <issueManagement>
+    <system>github</system>
+    <url>http://github.com/codehaus-plexus/plexus-cli/issues</url>
+  </issueManagement>
 
   <dependencies>
     <dependency>
