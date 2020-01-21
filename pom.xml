@@ -6,7 +6,7 @@
   <parent>
     <artifactId>plexus-components</artifactId>
     <groupId>org.codehaus.plexus</groupId>
-    <version>4.0</version>
+    <version>6.1</version>
   </parent>
 
   <artifactId>plexus-cli</artifactId>
@@ -32,6 +32,10 @@
     </site>
   </distributionManagement>
 
+  <properties>
+    <project.build.outputTimestamp>2020-01-20T18:52:37Z</project.build.outputTimestamp>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
