@@ -39,8 +39,6 @@ import java.util.Properties;
 
 /**
  * @author jason van zyl
- * @version $Id$
- * @noinspection UseOfSystemOutOrSystemErr,ACCESS_STATIC_VIA_INSTANCE
  */
 public abstract class AbstractCli
     implements Cli
