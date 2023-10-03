@@ -16,6 +16,12 @@ package org.codehaus.plexus.tools.cli;
  * limitations under the License.
  */
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -31,18 +37,10 @@ import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 /**
  * @author jason van zyl
  */
-public abstract class AbstractCli
-    implements Cli
-{
+public abstract class AbstractCli implements Cli {
     // ----------------------------------------------------------------------------
     // These are standard options that we would want to use for all our projects.
     // ----------------------------------------------------------------------------
@@ -63,61 +61,51 @@ public abstract class AbstractCli
     // Abstract methods
     // ----------------------------------------------------------------------------
 
-    public abstract Options buildCliOptions( Options options );
+    public abstract Options buildCliOptions(Options options);
 
-    public abstract void invokePlexusComponent( CommandLine cli,
-                                                PlexusContainer container )
-        throws Exception;
+    public abstract void invokePlexusComponent(CommandLine cli, PlexusContainer container) throws Exception;
 
-    public String getPomPropertiesPath()
-    {
+    public String getPomPropertiesPath() {
         return null;
     }
 
-    public int execute( String[] args )
-    {
-        ClassWorld classWorld = new ClassWorld( "plexus.core", Thread.currentThread().getContextClassLoader() );
+    public int execute(String[] args) {
+        ClassWorld classWorld =
+                new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
 
-        return execute( args, classWorld );
+        return execute(args, classWorld);
     }
 
-    public int execute( String[] args,
-                        ClassWorld classWorld )
-    {
+    public int execute(String[] args, ClassWorld classWorld) {
         CommandLine cli;
 
-        try
-        {
-            cli = parse( args );
-        }
-        catch ( ParseException e )
-        {
-            System.err.println( "Unable to parse command line options: " + e.getMessage() );
+        try {
+            cli = parse(args);
+        } catch (ParseException e) {
+            System.err.println("Unable to parse command line options: " + e.getMessage());
 
             displayHelp();
 
             return 1;
         }
 
-        if ( System.getProperty( "java.class.version", "44.0" ).compareTo( "48.0" ) < 0 )
-        {
-            System.err.println( "Sorry, but JDK 1.4 or above is required to execute Maven" );
+        if (System.getProperty("java.class.version", "44.0").compareTo("48.0") < 0) {
+            System.err.println("Sorry, but JDK 1.4 or above is required to execute Maven");
 
             System.err.println(
-                "You appear to be using Java version: " + System.getProperty( "java.version", "<unknown>" ) );
+                    "You appear to be using Java version: " + System.getProperty("java.version", "<unknown>"));
 
             return 1;
         }
 
-        boolean debug = cli.hasOption( DEBUG );
+        boolean debug = cli.hasOption(DEBUG);
 
-        boolean quiet = !debug && cli.hasOption( QUIET );
+        boolean quiet = !debug && cli.hasOption(QUIET);
 
-        boolean showErrors = debug || cli.hasOption( ERRORS );
+        boolean showErrors = debug || cli.hasOption(ERRORS);
 
-        if ( showErrors )
-        {
-            System.out.println( "+ Error stacktraces are turned on." );
+        if (showErrors) {
+            System.out.println("+ Error stacktraces are turned on.");
         }
 
         // ----------------------------------------------------------------------------
@@ -126,16 +114,11 @@ public abstract class AbstractCli
 
         int loggingLevel;
 
-        if ( debug )
-        {
+        if (debug) {
             loggingLevel = 0;
-        }
-        else if ( quiet )
-        {
+        } else if (quiet) {
             loggingLevel = 0;
-        }
-        else
-        {
+        } else {
             loggingLevel = 0;
         }
 
@@ -143,21 +126,17 @@ public abstract class AbstractCli
         // Process particular command line options
         // ----------------------------------------------------------------------
 
-        if ( cli.hasOption( HELP ) )
-        {
+        if (cli.hasOption(HELP)) {
             displayHelp();
 
             return 0;
         }
 
-        if ( cli.hasOption( VERSION ) )
-        {
+        if (cli.hasOption(VERSION)) {
             showVersion();
 
             return 0;
-        }
-        else if ( debug )
-        {
+        } else if (debug) {
             showVersion();
         }
 
@@ -165,66 +144,46 @@ public abstract class AbstractCli
         // This is what we will generalize for the invocation of the command line.
         // ----------------------------------------------------------------------------
 
-        try
-        {
-            ContainerConfiguration configuration = new DefaultContainerConfiguration()
-                .setClassWorld( classWorld );
+        try {
+            ContainerConfiguration configuration = new DefaultContainerConfiguration().setClassWorld(classWorld);
 
-            customizeContainerConfiguration( configuration, cli );
-            
-            PlexusContainer plexus = new DefaultPlexusContainer( configuration );
+            customizeContainerConfiguration(configuration, cli);
 
-            invokePlexusComponent( cli, plexus );
-        }
-        catch ( PlexusContainerException e )
-        {
-            showFatalError( "Cannot create Plexus container.", e, true );
-        }
-        catch ( ComponentLookupException e )
-        {
-            showError( "Cannot lookup application component.", e, true );
-        }
-        catch ( Exception e )
-        {
-            showError( "Problem executing command line.", e, true );
+            PlexusContainer plexus = new DefaultPlexusContainer(configuration);
+
+            invokePlexusComponent(cli, plexus);
+        } catch (PlexusContainerException e) {
+            showFatalError("Cannot create Plexus container.", e, true);
+        } catch (ComponentLookupException e) {
+            showError("Cannot lookup application component.", e, true);
+        } catch (Exception e) {
+            showError("Problem executing command line.", e, true);
         }
 
         return 0;
     }
 
-    protected void customizeContainerConfiguration( ContainerConfiguration configuration, CommandLine cli )
-    {        
-    }
-    
-    protected int showFatalError( String message,
-                                  Exception e,
-                                  boolean show )
-    {
-        System.err.println( "FATAL ERROR: " + message );
+    protected void customizeContainerConfiguration(ContainerConfiguration configuration, CommandLine cli) {}
 
-        if ( show )
-        {
-            System.err.println( "Error stacktrace:" );
+    protected int showFatalError(String message, Exception e, boolean show) {
+        System.err.println("FATAL ERROR: " + message);
+
+        if (show) {
+            System.err.println("Error stacktrace:");
 
             e.printStackTrace();
-        }
-        else
-        {
-            System.err.println( "For more information, run with the -e flag" );
+        } else {
+            System.err.println("For more information, run with the -e flag");
         }
 
         return 1;
     }
 
-    protected void showError( String message,
-                              Exception e,
-                              boolean show )
-    {
-        System.err.println( message );
+    protected void showError(String message, Exception e, boolean show) {
+        System.err.println(message);
 
-        if ( show )
-        {
-            System.err.println( "Error stacktrace:" );
+        if (show) {
+            System.err.println("Error stacktrace:");
 
             e.printStackTrace();
         }
@@ -232,47 +191,38 @@ public abstract class AbstractCli
 
     // Need to get the versions of the application in a general way, so that I need a way to get the
     // specifics of the application so that I can do this in a general way.
-    private void showVersion()
-    {
+    private void showVersion() {
         InputStream is;
 
-        try
-        {
+        try {
             Properties properties = new Properties();
 
             String pomPropertiesPath = getPomPropertiesPath();
 
-            if ( pomPropertiesPath == null )
-            {
-                System.err.println( "Unable determine version from JAR file." );
+            if (pomPropertiesPath == null) {
+                System.err.println("Unable determine version from JAR file.");
 
                 return;
             }
 
-            is = AbstractCli.class.getClassLoader().getResourceAsStream( pomPropertiesPath );
+            is = AbstractCli.class.getClassLoader().getResourceAsStream(pomPropertiesPath);
 
-            if ( is == null )
-            {
-                System.err.println( "Unable determine version from JAR file." );
+            if (is == null) {
+                System.err.println("Unable determine version from JAR file.");
 
                 return;
             }
 
-            properties.load( is );
+            properties.load(is);
 
-            if ( properties.getProperty( "builtOn" ) != null )
-            {
-                System.out.println( "Version: " + properties.getProperty( "version", "unknown" ) + " built on " +
-                    properties.getProperty( "builtOn" ) );
+            if (properties.getProperty("builtOn") != null) {
+                System.out.println("Version: " + properties.getProperty("version", "unknown") + " built on "
+                        + properties.getProperty("builtOn"));
+            } else {
+                System.out.println("Version: " + properties.getProperty("version", "unknown"));
             }
-            else
-            {
-                System.out.println( "Version: " + properties.getProperty( "version", "unknown" ) );
-            }
-        }
-        catch ( IOException e )
-        {
-            System.err.println( "Unable determine version from JAR file: " + e.getMessage() );
+        } catch (IOException e) {
+            System.err.println("Unable determine version from JAR file: " + e.getMessage());
         }
     }
 
@@ -280,8 +230,7 @@ public abstract class AbstractCli
     // System properties handling
     // ----------------------------------------------------------------------
 
-    private Properties getExecutionProperties( CommandLine commandLine )
-    {
+    private Properties getExecutionProperties(CommandLine commandLine) {
         Properties executionProperties = new Properties();
 
         // ----------------------------------------------------------------------
@@ -290,142 +239,127 @@ public abstract class AbstractCli
         // are most dominant.
         // ----------------------------------------------------------------------
 
-        if ( commandLine.hasOption( SET_SYSTEM_PROPERTY ) )
-        {
-            String[] defStrs = commandLine.getOptionValues( SET_SYSTEM_PROPERTY );
+        if (commandLine.hasOption(SET_SYSTEM_PROPERTY)) {
+            String[] defStrs = commandLine.getOptionValues(SET_SYSTEM_PROPERTY);
 
-            for ( int i = 0; i < defStrs.length; ++i )
-            {
-                setCliProperty( defStrs[i], executionProperties );
+            for (int i = 0; i < defStrs.length; ++i) {
+                setCliProperty(defStrs[i], executionProperties);
             }
         }
 
-        executionProperties.putAll( System.getProperties() );
+        executionProperties.putAll(System.getProperties());
 
         return executionProperties;
     }
 
-    private void setCliProperty( String property,
-                                 Properties executionProperties )
-    {
+    private void setCliProperty(String property, Properties executionProperties) {
         String name;
 
         String value;
 
-        int i = property.indexOf( "=" );
+        int i = property.indexOf("=");
 
-        if ( i <= 0 )
-        {
+        if (i <= 0) {
             name = property.trim();
 
             value = "true";
-        }
-        else
-        {
-            name = property.substring( 0, i ).trim();
+        } else {
+            name = property.substring(0, i).trim();
 
-            value = property.substring( i + 1 ).trim();
+            value = property.substring(i + 1).trim();
         }
 
-        executionProperties.setProperty( name, value );
+        executionProperties.setProperty(name, value);
 
         // ----------------------------------------------------------------------
         // I'm leaving the setting of system properties here as not to break
         // the SystemPropertyProfileActivator. This won't harm embedding. jvz.
         // ----------------------------------------------------------------------
 
-        System.setProperty( name, value );
+        System.setProperty(name, value);
     }
 
     private Options options;
 
-    public Options buildDefaultCliOptions()
-    {
+    public Options buildDefaultCliOptions() {
         options = new Options();
 
-        options.addOption(
-            OptionBuilder.withLongOpt( "define" ).hasArg().withDescription( "Define a system property" ).create(
-                SET_SYSTEM_PROPERTY ) );
-        options.addOption(
-            OptionBuilder.withLongOpt( "help" ).withDescription( "Display help information" ).create( HELP ) );
-        options.addOption(
-            OptionBuilder.withLongOpt( "version" ).withDescription( "Display version information" ).create( VERSION ) );
-        options.addOption(
-            OptionBuilder.withLongOpt( "quiet" ).withDescription( "Quiet output - only show errors" ).create( QUIET ) );
-        options.addOption(
-            OptionBuilder.withLongOpt( "debug" ).withDescription( "Produce execution debug output" ).create( DEBUG ) );
-        options.addOption(
-            OptionBuilder.withLongOpt( "errors" ).withDescription( "Produce execution error messages" ).create(
-                ERRORS ) );
+        options.addOption(OptionBuilder.withLongOpt("define")
+                .hasArg()
+                .withDescription("Define a system property")
+                .create(SET_SYSTEM_PROPERTY));
+        options.addOption(OptionBuilder.withLongOpt("help")
+                .withDescription("Display help information")
+                .create(HELP));
+        options.addOption(OptionBuilder.withLongOpt("version")
+                .withDescription("Display version information")
+                .create(VERSION));
+        options.addOption(OptionBuilder.withLongOpt("quiet")
+                .withDescription("Quiet output - only show errors")
+                .create(QUIET));
+        options.addOption(OptionBuilder.withLongOpt("debug")
+                .withDescription("Produce execution debug output")
+                .create(DEBUG));
+        options.addOption(OptionBuilder.withLongOpt("errors")
+                .withDescription("Produce execution error messages")
+                .create(ERRORS));
 
-        return buildCliOptions( options );
+        return buildCliOptions(options);
     }
 
-    public CommandLine parse( String[] args )
-        throws ParseException
-    {
+    public CommandLine parse(String[] args) throws ParseException {
         // We need to eat any quotes surrounding arguments...
-        String[] cleanArgs = cleanArgs( args );
+        String[] cleanArgs = cleanArgs(args);
 
         CommandLineParser parser = new GnuParser();
 
-        return parser.parse( buildDefaultCliOptions(), cleanArgs );
+        return parser.parse(buildDefaultCliOptions(), cleanArgs);
     }
 
-    private static String[] cleanArgs( String[] args )
-    {
+    private static String[] cleanArgs(String[] args) {
         List cleaned = new ArrayList();
 
         StringBuffer currentArg = null;
 
-        for ( int i = 0; i < args.length; i++ )
-        {
+        for (int i = 0; i < args.length; i++) {
             String arg = args[i];
 
             boolean addedToBuffer = false;
 
-            if ( arg.startsWith( "\"" ) )
-            {
+            if (arg.startsWith("\"")) {
                 // if we're in the process of building up another arg, push it and start over.
                 // this is for the case: "-Dfoo=bar "-Dfoo2=bar two" (note the first unterminated quote)
-                if ( currentArg != null )
-                {
-                    cleaned.add( currentArg.toString() );
+                if (currentArg != null) {
+                    cleaned.add(currentArg.toString());
                 }
 
                 // start building an argument here.
-                currentArg = new StringBuffer( arg.substring( 1 ) );
+                currentArg = new StringBuffer(arg.substring(1));
 
                 addedToBuffer = true;
             }
 
             // this has to be a separate "if" statement, to capture the case of: "-Dfoo=bar"
-            if ( arg.endsWith( "\"" ) )
-            {
-                String cleanArgPart = arg.substring( 0, arg.length() - 1 );
+            if (arg.endsWith("\"")) {
+                String cleanArgPart = arg.substring(0, arg.length() - 1);
 
                 // if we're building an argument, keep doing so.
-                if ( currentArg != null )
-                {
+                if (currentArg != null) {
                     // if this is the case of "-Dfoo=bar", then we need to adjust the buffer.
-                    if ( addedToBuffer )
-                    {
-                        currentArg.setLength( currentArg.length() - 1 );
+                    if (addedToBuffer) {
+                        currentArg.setLength(currentArg.length() - 1);
                     }
                     // otherwise, we trim the trailing " and append to the buffer.
-                    else
-                    {
+                    else {
                         // TODO: introducing a space here...not sure what else to do but collapse whitespace
-                        currentArg.append( ' ' ).append( cleanArgPart );
+                        currentArg.append(' ').append(cleanArgPart);
                     }
 
                     // we're done with this argument, so add it.
-                    cleaned.add( currentArg.toString() );
-                }
-                else
-                {
+                    cleaned.add(currentArg.toString());
+                } else {
                     // this is a simple argument...just add it.
-                    cleaned.add( cleanArgPart );
+                    cleaned.add(cleanArgPart);
                 }
 
                 // the currentArg MUST be finished when this completes.
@@ -438,49 +372,41 @@ public abstract class AbstractCli
             // buffer, then append it with a preceding space...again, not sure what else to
             // do other than collapse whitespace.
             // NOTE: The case of a trailing quote is handled by nullifying the arg buffer.
-            if ( !addedToBuffer )
-            {
+            if (!addedToBuffer) {
                 // append to the argument we're building, collapsing whitespace to a single space.
-                if ( currentArg != null )
-                {
-                    currentArg.append( ' ' ).append( arg );
+                if (currentArg != null) {
+                    currentArg.append(' ').append(arg);
                 }
                 // this is a loner, just add it directly.
-                else
-                {
-                    cleaned.add( arg );
+                else {
+                    cleaned.add(arg);
                 }
             }
         }
 
         // clean up.
-        if ( currentArg != null )
-        {
-            cleaned.add( currentArg.toString() );
+        if (currentArg != null) {
+            cleaned.add(currentArg.toString());
         }
 
         int cleanedSz = cleaned.size();
         String[] cleanArgs = null;
 
-        if ( cleanedSz == 0 )
-        {
+        if (cleanedSz == 0) {
             // if we didn't have any arguments to clean, simply pass the original array through
             cleanArgs = args;
-        }
-        else
-        {
-            cleanArgs = (String[]) cleaned.toArray( new String[cleanedSz] );
+        } else {
+            cleanArgs = (String[]) cleaned.toArray(new String[cleanedSz]);
         }
 
         return cleanArgs;
     }
 
-    public void displayHelp()
-    {
+    public void displayHelp() {
         System.out.println();
 
         HelpFormatter formatter = new HelpFormatter();
 
-        formatter.printHelp( "mvn [options] [<goal(s)>] [<phase(s)>]", "\nOptions:", options, "\n" );
+        formatter.printHelp("mvn [options] [<goal(s)>] [<phase(s)>]", "\nOptions:", options, "\n");
     }
 }

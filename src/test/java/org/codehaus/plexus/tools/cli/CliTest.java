@@ -16,40 +16,34 @@ package org.codehaus.plexus.tools.cli;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
-
+import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.io.File;
+
+import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * @author Jason van Zyl
  */
-public class CliTest
-    extends PlexusTestCase
-{
-    public void testCli()
-        throws Exception
-    {
-        String[] args = new String[]{"-n", getBasedir()};
+public class CliTest extends PlexusTestCase {
+    public void testCli() throws Exception {
+        String[] args = new String[] {"-n", getBasedir()};
 
         Class clazz = TestCli.class;
 
-        Method m = clazz.getMethod( "main", new Class[]{String[].class} );
+        Method m = clazz.getMethod("main", new Class[] {String[].class});
 
         int modifiers = m.getModifiers();
 
-        if ( Modifier.isStatic( modifiers ) && Modifier.isPublic( modifiers ) )
-        {
-            if ( m.getReturnType() == Integer.TYPE || m.getReturnType() == Void.TYPE )
-            {
-                m.invoke( clazz, new Object[]{args} );
+        if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)) {
+            if (m.getReturnType() == Integer.TYPE || m.getReturnType() == Void.TYPE) {
+                m.invoke(clazz, new Object[] {args});
             }
         }
 
-        String s = FileUtils.fileRead( new File( getBasedir(), "target/cli.txt" ) );
+        String s = FileUtils.fileRead(new File(getBasedir(), "target/cli.txt"));
 
-        assertEquals( "NAME_OPTION_INVOKED", s );
+        assertEquals("NAME_OPTION_INVOKED", s);
     }
 }
