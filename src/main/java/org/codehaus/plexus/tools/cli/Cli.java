@@ -16,20 +16,17 @@ package org.codehaus.plexus.tools.cli;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.PlexusContainer;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.codehaus.plexus.PlexusContainer;
 
 /**
  * @author Jason van Zyl
  */
-public interface Cli
-{
-    Options buildCliOptions( Options options );
+public interface Cli {
+    Options buildCliOptions(Options options);
 
-    void invokePlexusComponent( CommandLine cli,
-                                PlexusContainer container )
-        throws Exception;
+    void invokePlexusComponent(CommandLine cli, PlexusContainer container) throws Exception;
 
     // this can be calculated
     String getPomPropertiesPath();
