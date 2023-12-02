@@ -14,15 +14,18 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-name: Java CI
 
-on:
-  push:
-    branches-ignore:
-      - dependabot/**
-  pull_request:
+name: GitHub CI
+
+on: [push, pull_request]
 
 jobs:
   build:
-    name: Verify
-    uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v3
+    name: Build it
+    uses: codehaus-plexus/.github/.github/workflows/maven.yml@master
+
+  deploy:
+    name: Deploy
+    needs: build
+    uses: codehaus-plexus/.github/.github/workflows/maven-deploy.yml@master
+    secrets: inherit
