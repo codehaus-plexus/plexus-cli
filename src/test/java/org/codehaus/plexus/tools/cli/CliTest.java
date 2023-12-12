@@ -20,14 +20,18 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.codehaus.plexus.testing.PlexusExtension.getBasedir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Jason van Zyl
  */
-public class CliTest extends PlexusTestCase {
-    public void testCli() throws Exception {
+class CliTest {
+    @Test
+    void cli() throws Exception {
         String[] args = new String[] {"-n", getBasedir()};
 
         Class clazz = TestCli.class;
