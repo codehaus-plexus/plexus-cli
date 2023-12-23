@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>plexus-cli</artifactId>
-  <version>1.7-SNAPSHOT</version>
+  <version>1.7</version>
 
   <name>Plexus CLI</name>
   <description>Easily create CLIs with Plexus components</description>
@@ -17,7 +17,7 @@
   <scm>
     <connection>scm:git:https://github.com/codehaus-plexus/plexus-cli.git</connection>
     <developerConnection>scm:git:https://github.com/codehaus-plexus/plexus-cli.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>plexus-cli-1.7</tag>
     <url>https://github.com/codehaus-plexus/plexus-cli/tree/${project.scm.tag}/</url>
   </scm>
   <issueManagement>
@@ -32,7 +32,7 @@
   </distributionManagement>
 
   <properties>
-    <project.build.outputTimestamp>2020-01-20T18:52:37Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-12-23T21:44:13Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
